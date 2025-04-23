@@ -1,11 +1,14 @@
 package daysteps
 
 import (
-	"/c/Users/storm/petprojects/firdSprintTz/spentcalories.go"
 	"errors"
 	"fmt"
+	"log"
+	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Yandex-Practicum/tracker/internal/spentcalories"
 )
 
 const (
@@ -13,8 +16,6 @@ const (
 	stepLength = 0.65
 	// Количество метров в одном километре
 	mInKm = 1000
-
-	errParse = errors.New("ошибка парсинга строки")
 )
 
 func parsePackage(data string) (int, time.Duration, error) {
@@ -26,19 +27,29 @@ func parsePackage(data string) (int, time.Duration, error) {
 	//Проверка длины слайса
 
 	if len(stepsndWalk) != 2 {
+		err := errors.New("неверная длина слайса")
+		log.Println(err)
 		return 0, 0, err
+
 	}
 	//Преобразование первого элемента слайса в число типа int
-	steps, err := int(stepsndWalk[0])
+	steps, err := strconv.Atoi(stepsndWalk[0])
 	if err != nil {
+		err := errors.New("ошибка преобразования")
+		log.Println(err)
 		return 0, 0, err
+
 	}
 	if steps == 0 {
-		return 0, 0, errors.New("количество шагов не должно быть равным нулю")
+		err := errors.New("количество шагов не должно быть равным нулю")
+		log.Println(err)
+		return 0, 0, err
 	}
 	//Преобразование второго элемента слайса в time.Duration
 	timeOfWalk, err := time.ParseDuration(stepsndWalk[1])
 	if err != nil {
+		err := errors.New("ошибка парсирования времени")
+		log.Println(err)
 		return 0, 0, err
 	}
 	return steps, timeOfWalk, nil
@@ -47,22 +58,24 @@ func parsePackage(data string) (int, time.Duration, error) {
 func DayActionInfo(data string, weight, height float64) string {
 
 	//Парсинг строки с данными
-	walkDetails, err := parsePackage(data)
+	walkDetails, timeWalk, err := parsePackage(data)
 	if err != nil {
 		fmt.Println("ошибка парсинга строки")
 		return ""
 	}
 
-	step := walkDetails[0]
-	if walkDetails[0] == 0 {
+	if walkDetails == 0 {
 		return ""
 	}
 
-	distanceM := (float64(step) * stepLength) / mInKm
+	distanceM := (float64(walkDetails) * stepLength) / mInKm
 
-	ccals := spentcalories.WalkingSpentCalories()
+	ccals, err := spentcalories.WalkingSpentCalories(walkDetails, weight, height, timeWalk)
+	if err != nil {
+		return ""
+	}
 
-	output := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.", step, distanceM, ccals)
+	output := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.", walkDetails, distanceM, ccals)
 	return output
 
 }

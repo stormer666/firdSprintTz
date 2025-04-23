@@ -80,7 +80,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	}
 
 	var output string
-
+	durationInHours := howTime / 60.0
 	howLong := distance(howSteps, height)
 	avgSp := meanSpeed(howSteps, height, howTime)
 
@@ -90,14 +90,14 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		output = fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f\nДистанция: %.2f\nСкорость: %.2f\nСожгли калорий: %.2f\n", typeOfActivity, howTime.Seconds()/60, howLong, avgSp, spentCcal)
+		output = fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f\nДистанция: %.2f\nСкорость: %.2f\nСожгли калорий: %.2f\n", typeOfActivity, durationInHours, howLong, avgSp, spentCcal)
 
 	case "Ходьба":
 		spentCcal, err := WalkingSpentCalories(howSteps, weight, height, howTime)
 		if err != nil {
 			return "", err
 		}
-		output = fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f\nДистанция: %.2f\nСкорость: %.2f\nСожгли калорий: %.2f\n", typeOfActivity, howTime.Seconds()/60, howLong, avgSp, spentCcal)
+		output = fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f\nДистанция: %.2f\nСкорость: %.2f\nСожгли калорий: %.2f\n", typeOfActivity, durationInHours, howLong, avgSp, spentCcal)
 
 	default:
 		return "", errors.New("неизвестный тип тренировки")

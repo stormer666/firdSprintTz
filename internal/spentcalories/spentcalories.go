@@ -33,11 +33,22 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, err
 	}
 
+	if steps <= 0 {
+		err := errors.New("количество шагов должно быть больше нуля")
+		log.Println(err)
+		return 0, "", 0, err
+	}
+
 	kindOfActivity := slicestr[1]
 
 	timeOfWalk, err := time.ParseDuration(slicestr[2])
 	if err != nil {
 		err := errors.New("ошибка парсинга времени")
+		log.Println(err)
+		return 0, "", 0, err
+	}
+	if timeOfWalk <= 0 {
+		err := errors.New("продолжительность должна быть больше нуля")
 		log.Println(err)
 		return 0, "", 0, err
 	}
@@ -149,7 +160,7 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	averageSp := meanSpeed(steps, height, duration)
 
 	durationMin := duration.Minutes()
-	preResult := weight * averageSp * durationMin
+	preResult := (weight * averageSp * durationMin) / minInH
 	result := preResult * walkingCaloriesCoefficient
 
 	return result, nil

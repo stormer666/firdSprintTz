@@ -40,15 +40,21 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, err
 
 	}
-	if steps == 0 {
-		err := errors.New("количество шагов не должно быть равным нулю")
+	if steps <= 0 {
+		err := errors.New("количество шагов не должно быть меньше либо равным нулю")
 		log.Println(err)
 		return 0, 0, err
 	}
+
 	//Преобразование второго элемента слайса в time.Duration
 	timeOfWalk, err := time.ParseDuration(stepsndWalk[1])
 	if err != nil {
 		err := errors.New("ошибка парсирования времени")
+		log.Println(err)
+		return 0, 0, err
+	}
+	if timeOfWalk <= 0.0 {
+		err := errors.New("продолжительность не должна быть меньше либо равна нулю")
 		log.Println(err)
 		return 0, 0, err
 	}
@@ -64,7 +70,7 @@ func DayActionInfo(data string, weight, height float64) string {
 		return ""
 	}
 
-	if walkDetails == 0 {
+	if walkDetails <= 0 {
 		return ""
 	}
 
@@ -75,7 +81,7 @@ func DayActionInfo(data string, weight, height float64) string {
 		return ""
 	}
 
-	output := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.", walkDetails, distanceM, ccals)
+	output := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", walkDetails, distanceM, ccals)
 	return output
 
 }
